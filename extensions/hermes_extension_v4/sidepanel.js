@@ -745,10 +745,8 @@ document.addEventListener('DOMContentLoaded', () => {
     switch (mode) {
       case 'profit_value': label.textContent = '期望利润 ¥'; inp.placeholder = '50'; break;
       case 'net_margin': label.textContent = '目标毛利率 %'; inp.placeholder = '20'; break;
-      case 'sale_margin': label.textContent = '售价利润率 %'; inp.placeholder = '15'; break;
+      case 'sale_margin': label.textContent = '售价利润率 % ✅'; inp.placeholder = '15'; break;
       case 'cost_margin': label.textContent = '成本利润率 %'; inp.placeholder = '25'; break;
-      case 'net_profit_margin': label.textContent = '净利润毛利率 %'; inp.placeholder = '20'; break;
-      case 'forward_margin': label.textContent = '正向利润率 %'; inp.placeholder = '20'; break;
     }
   });
 
@@ -809,20 +807,6 @@ document.addEventListener('DOMContentLoaded', () => {
           case 'cost_margin': {
             const m = targetVal / 100;
             saleUsd = (actualCost * (1 + m) / rateCny + shipUsd) / (1 - commRate);
-            break;
-          }
-          case 'net_profit_margin': {
-            const m = targetVal / 100;
-            const baseUsd = costUsd + 0.5;
-            const targetNet = baseUsd * (1 + m);
-            saleUsd = (targetNet + shipUsd) / (1 - commRate);
-            break;
-          }
-          case 'forward_margin': {
-            const m = targetVal / 100;
-            const baseUsd = costUsd - 0.5;
-            const targetNet = baseUsd * (1 + m);
-            saleUsd = (targetNet + shipUsd) / (1 - commRate);
             break;
           }
           default: return null;

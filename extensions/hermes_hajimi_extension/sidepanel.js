@@ -358,14 +358,6 @@ function calculate(ck) {
         saleUsd = (actualCost * (1 + m) / rateUsdRmb + shipUsd) / (1 - commRate);
         break;
       }
-      case 'net_profit_margin': {
-        // netUsd = (costUsd + 0.5) * (1 + targetVal/100)
-        const m = targetVal / 100;
-        const baseUsd = costUsd + 0.5;
-        const targetNetUsd = baseUsd * (1 + m);
-        saleUsd = (targetNetUsd + shipUsd) / (1 - commRate);
-        break;
-      }
       default:
         return null;
     }
@@ -815,11 +807,6 @@ function onProfitModeChange() {
       label.textContent = '成本利润率 %';
       inp.placeholder = '25';
       if (!inp.value || inp.value === '50') inp.value = '25';
-      break;
-    case 'net_profit_margin':
-      label.textContent = '净利润毛利率 % (成本+$0.5为基数)';
-      inp.placeholder = '20';
-      if (!inp.value || inp.value === '50') inp.value = '20';
       break;
   }
 }
