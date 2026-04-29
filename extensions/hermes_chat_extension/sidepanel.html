@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter','system-ui',-apple-system,'Segoe UI',sans-serif}
+body{width:100%;min-height:100vh;background:#08090a;color:#e8e8f0;padding:0;overflow-x:hidden}
+.hd{background:linear-gradient(135deg,#0d0e12,#12141a);border-bottom:1px solid rgba(255,230,0,0.10);padding:10px 14px;position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between}
+.hd h1{font-size:15px;color:#FFE600;font-weight:700}
+.hd .stoggle{display:flex;gap:2px;background:rgba(255,255,255,0.03);border-radius:6px;padding:3px}
+.hd .stoggle button{background:none;border:none;padding:4px 10px;font-size:12px;border-radius:4px;cursor:pointer;color:#8a8f98;transition:all 0.12s}
+.hd .stoggle button.act{background:var(--c,#5b8def);color:#fff;font-weight:600}
+.hd .stoggle button:hover:not(.act){color:#e8e8f0}
+
+/* ─── API Key + Model Row ──────────────────── */
+.config-row{display:flex;gap:4px;padding:5px 14px 2px;align-items:center}
+.config-row input{flex:1;background:#11141d;border:1px solid rgba(255,255,255,0.06);border-radius:5px;color:#888;font-size:11px;padding:5px 7px;outline:none;min-width:0}
+.config-row input:focus{border-color:#FFE600;color:#e8e8f0}
+.config-row select{background:#11141d;border:1px solid rgba(255,255,255,0.06);border-radius:5px;color:#888;font-size:11px;padding:5px 7px;outline:none;cursor:pointer;min-width:80px}
+.config-row select:focus{border-color:#FFE600;color:#e8e8f0}
+.config-row select option{background:#11141d;color:#e8e8f0}
+.config-row .sv-btn{background:rgba(255,230,0,0.10);border:1px solid rgba(255,230,0,0.15);border-radius:5px;color:#FFE600;font-size:10px;padding:4px 8px;cursor:pointer;white-space:nowrap;font-weight:500;transition:all 0.1s}
+.config-row .sv-btn:hover{background:rgba(255,230,0,0.18)}
+
+/* ─── Messages ─────────────────────────────── */
+.msgs{flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:8px;min-height:200px;height:calc(100vh - 185px)}
+.msgs .msg{max-width:95%;padding:8px 10px;border-radius:6px;font-size:13px;line-height:1.55;animation:fadeIn .15s;white-space:pre-wrap;word-break:break-word}
+.msgs .msg.user-h{background:#5b8def;color:#fff;align-self:flex-end;border-bottom-right-radius:2px}
+.msgs .msg.user-o{background:#e8772e;color:#fff;align-self:flex-end;border-bottom-right-radius:2px}
+.msgs .msg.assistant{background:#11141d;border:1px solid rgba(255,255,255,0.06);align-self:flex-start;border-bottom-left-radius:2px;color:#e2e4ea}
+.msgs .msg.error{border-color:#fb718544;color:#fb7185}
+.msgs .thinking{font-size:12px;color:#555;padding:6px 10px;font-style:italic;align-self:flex-start}
+.msgs .welcome{text-align:center;color:#555;padding:40px 14px;font-size:13px;margin:auto;line-height:1.6}
+.msgs .welcome h3{color:#888;font-weight:500;font-size:15px;margin-bottom:4px}
+.msgs .welcome .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;background:rgba(255,230,0,0.08);color:#FFE600;margin-top:4px}
+
+/* ─── Input ────────────────────────────────── */
+.inp-area{display:flex;gap:6px;padding:8px 14px 6px;border-top:1px solid rgba(255,255,255,0.04)}
+.inp-area textarea{flex:1;background:#11141d;border:1px solid rgba(255,255,255,0.06);border-radius:6px;padding:7px 8px;color:#e8e8f0;font-size:12px;resize:none;outline:none;min-height:34px;max-height:90px;font-family:inherit}
+.inp-area textarea:focus{border-color:#FFE600}
+.inp-area .sbtn{width:34px;height:34px;border-radius:6px;border:none;background:#FFE600;color:#08090a;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.1s}
+.inp-area .sbtn:hover{box-shadow:0 2px 8px rgba(255,230,0,0.2)}
+.inp-area .sbtn:disabled{opacity:.3;cursor:not-allowed}
+
+/* ─── Toolbar ──────────────────────────────── */
+.btns{display:flex;gap:4px;padding:2px 14px 4px}
+.btns button{flex:1;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:5px;color:#888;font-size:10px;padding:4px 6px;cursor:pointer;transition:all 0.1s}
+.btns button:hover{color:#e8e8f0;background:rgba(255,255,255,0.06)}
+
+/* ─── Status ───────────────────────────────── */
+.stts{font-size:10px;color:#555;padding:4px 14px;text-align:center;border-top:1px solid rgba(255,255,255,0.04);background:#08090a;letter-spacing:0.2px}
+.stts .dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px;vertical-align:middle}
+.stts .dot.g{background:#10b981}
+.stts .dot.y{background:#FFE600}
+.stts .dot.r{background:#fb7185}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <h1>💬 Hermes Chat</h1>
+  <div class="stoggle" id="modeToggle">
+    <button class="act" data-mode="hermes" style="--c:#5b8def">🤖 Hermes</button>
+    <button data-mode="ollama" style="--c:#e8772e">🦙 Ollama</button>
+  </div>
+</div>
+
+<!-- DeepSeek API Key row (shown in Hermes mode) -->
+<div class="config-row" id="hermesConfig">
+  <input type="password" id="apiKey" placeholder="DeepSeek API Key (sk-...)" />
+  <button class="sv-btn" id="saveKeyBtn">💾 保存</button>
+</div>
+
+<!-- Ollama config row (shown in Ollama mode) -->
+<div class="config-row" id="ollamaConfig" style="display:none">
+  <select id="modelSelect"><option value="qwen2.5:7b">qwen2.5:7b</option></select>
+  <span style="font-size:9px;color:#555" id="modelStatus"></span>
+</div>
+
+<!-- Messages -->
+<div class="msgs" id="msgs">
+  <div class="welcome" id="welcome">
+    <h3 id="wTitle">🤖 Hermes</h3>
+    <p id="wText">填写 API Key 后开始对话</p>
+    <div class="tag" id="wModel">deepseek-chat</div>
+  </div>
+</div>
+
+<div class="btns">
+  <button onclick="clearChat()">🗑 清空</button>
+  <button onclick="copyChat()">📋 复制</button>
+  <button onclick="exportChat()">💾 导出</button>
+  <button onclick="fetchModels()">🔄 刷新模型</button>
+</div>
+
+<div class="inp-area">
+  <textarea id="input" placeholder="输入消息，Enter发送... (Shift+Enter换行)" rows="1"></textarea>
+  <button class="sbtn" id="sendBtn">➤</button>
+</div>
+
+<div class="stts" id="statusBar"><span class="dot g"></span>就绪</div>
+
+<script src="sidepanel.js"></script>
+</body>
+</html>

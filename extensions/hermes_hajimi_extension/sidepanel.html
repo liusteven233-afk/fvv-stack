@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+/* ── Reset & Base ───────────────────────────── */
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter','system-ui',-apple-system,'Segoe UI',sans-serif}
+body{width:100%;min-height:100vh;background:#0b0c0f;color:#e4e6ef;padding:0;overflow-x:hidden;font-size:14px}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:#0b0c0f}
+::-webkit-scrollbar-thumb{background:#2a2d36;border-radius:3px}
+::selection{background:rgba(255,230,0,0.25);color:#fff}
+
+/* ── Header ─────────────────────────────────── */
+.hd{background:linear-gradient(135deg,#0d0e12,#12141a);border-bottom:1px solid rgba(255,230,0,0.12);padding:10px 14px 6px;position:sticky;top:0;z-index:100}
+.hd h1{font-size:17px;color:#FFE600;font-weight:700;letter-spacing:-0.3px}
+.hd .s{font-size:11px;color:#9ea3ae;margin-top:2px;letter-spacing:0.3px}
+
+/* ── Auth Bar ─────────────────────────────────── */
+.auth-bar{font-size:10px;padding:3px 0 0;text-align:center;border-radius:4px;margin-top:4px}
+.auth-bar.ok{color:#10b981}
+.auth-bar.mid{color:#FFE600}
+.auth-bar.warn{color:#fb7185}
+
+/* ── Section ────────────────────────────────── */
+.sec{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.05)}
+.st{font-size:11px;text-transform:uppercase;letter-spacing:0.7px;color:#9ea3ae;margin-bottom:6px;font-weight:600}
+.st-ic{font-size:11px;color:#9ea3ae;margin-bottom:6px;font-weight:600}
+.sec:last-of-type{border-bottom:none}
+
+/* ── Select ─────────────────────────────────── */
+.sel{width:100%;padding:8px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);color:#e4e6ef;font-size:13px;outline:none;appearance:none;cursor:pointer;margin-bottom:5px}
+.sel:focus{border-color:#FFE600;box-shadow:0 0 0 2px rgba(255,230,0,0.10)}
+.sel optgroup{background:#1a1c23;color:#e4e6ef}
+.sel option{background:#1a1c23;color:#e4e6ef}
+
+/* ── Inputs ─────────────────────────────────── */
+.inp{width:100%;padding:7px 9px;border-radius:5px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);color:#e4e6ef;font-size:13px;outline:none;transition:border-color 0.15s, box-shadow 0.15s}
+.inp:focus{border-color:#FFE600;box-shadow:0 0 0 2px rgba(255,230,0,0.10)}
+.inp::placeholder{color:#5a5e6a}
+.inp-r{color:#fb7185;border-color:rgba(251,113,133,0.25)}
+.inp-r:focus{border-color:#fb7185}
+.inp-g{color:#10b981;border-color:rgba(16,185,129,0.25)}
+.inp-g:focus{border-color:#10b981}
+
+/* ── Buttons ────────────────────────────────── */
+.btn{display:block;width:100%;padding:8px 12px;border-radius:5px;border:none;font-size:13px;font-weight:500;cursor:pointer;text-align:center;transition:all 0.12s ease}
+.btn-p{background:linear-gradient(135deg,#FFE600,#e0c800);color:#0b0c0f;font-weight:600}
+.btn-p:hover{box-shadow:0 3px 12px rgba(255,230,0,0.18);transform:translateY(-0.5px)}
+.btn-p:active{transform:translateY(0)}
+.btn-s{background:rgba(255,255,255,0.04);color:#adb1bb;border:1px solid rgba(255,255,255,0.07)}
+.btn-s:hover{background:rgba(255,255,255,0.08);color:#e4e6ef}
+.btn-d{background:rgba(251,113,133,0.08);color:#fb7185;border:1px solid rgba(251,113,133,0.15)}
+.btn-d:hover{background:rgba(251,113,133,0.18)}
+
+/* ── Row / Grid ─────────────────────────────── */
+.row{display:flex;gap:5px;align-items:center}
+.row .inp{margin:0}
+.row .sel{margin:0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:5px}
+
+/* ── Labels ─────────────────────────────────── */
+.lb{font-size:11px;color:#7a7f8c;display:block;margin-bottom:2px;font-weight:500}
+.val{font-weight:600;font-size:14px}
+.val-lg{font-size:19px;font-weight:700}
+.val-sm{font-size:12px;color:#adb1bb}
+
+/* ── Country Cards ──────────────────────────── */
+.cgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.card{background:rgba(255,255,255,0.02);border:1.5px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px 8px;cursor:pointer;transition:all 0.15s ease;position:relative}
+.card:hover{background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.11);box-shadow:0 2px 8px rgba(0,0,0,0.15)}
+.card.act{border-color:#10b981;background:rgba(16,185,129,0.06);box-shadow:0 0 0 1.5px rgba(16,185,129,0.15)}
+.card .flag{font-size:20px;margin-right:4px}
+.card .cn{font-size:13px;font-weight:600;color:#e4e6ef}
+.card .cr{font-size:10px;color:#7a7f8c;margin:2px 0}
+.card .cl{font-size:11px;color:#9ea3ae;line-height:1.6}
+.card .cl b{color:#c8cbd6}
+.card .np{font-size:15px;font-weight:700;text-align:right;margin-top:3px}
+.card .np.ok{color:#10b981}
+.card .np.no{color:#fb7185}
+.card .np.wait{color:#7a7f8c}
+.card .tip{position:absolute;top:3px;right:6px;font-size:8px;color:#4a4e58}
+.card .tag{display:inline-block;padding:1px 4px;border-radius:3px;font-size:9px;font-weight:600;margin-left:3px}
+.card .tag.g{background:rgba(16,185,129,0.15);color:#10b981}
+.card .tag.r{background:rgba(251,113,133,0.15);color:#fb7185}
+.card .comm-input{width:45px;padding:1px 3px;border-radius:3px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);color:#FFE600;font-size:10px;outline:none;text-align:right;font-weight:600;display:inline;margin-left:2px}
+.card .comm-input:focus{border-color:#FFE600}
+
+/* ── Result / Settlement panel ──────────────── */
+.res-panel{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:7px;padding:9px 10px;margin-top:6px}
+.res-panel .r-line{display:flex;justify-content:space-between;padding:3px 0;font-size:12px;border-bottom:1px solid rgba(255,255,255,0.04)}
+.res-panel .r-line:last-child{border-bottom:none}
+.res-panel .r-l{color:#7a7f8c}
+.res-panel .r-r{color:#e4e6ef;font-weight:500;text-align:right}
+.res-panel .r-r.g{color:#10b981}
+.res-panel .r-r.r{color:#fb7185}
+.res-panel .r-r.y{color:#FFE600}
+.res-panel .r-div{height:1px;background:rgba(255,255,255,0.07);margin:4px 0}
+.res-panel .r-hdr{font-size:11px;color:#9ea3ae;font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px}
+
+/* ── Shipping Table ─────────────────────────── */
+.ship-tbl{width:100%;border-collapse:collapse;font-size:10px;margin-top:4px}
+.ship-tbl th{text-align:left;padding:4px 5px;color:#7a7f8c;font-weight:500;border-bottom:1px solid rgba(255,255,255,0.07);font-size:9px}
+.ship-tbl td{padding:4px 5px;border-bottom:1px solid rgba(255,255,255,0.04);color:#adb1bb}
+.ship-tbl tr.hl td{background:rgba(255,230,0,0.08);color:#FFE600;font-weight:600}
+.ship-tbl tr:hover:not(.hl) td{background:rgba(255,255,255,0.03)}
+
+/* ── Badge ──────────────────────────────────── */
+.bdg{display:inline-block;padding:2px 5px;border-radius:3px;font-size:10px;font-weight:600}
+.bdg-y{background:rgba(255,230,0,0.12);color:#FFE600}
+.bdg-g{background:rgba(16,185,129,0.15);color:#10b981}
+.bdg-r{background:rgba(251,113,133,0.15);color:#fb7185}
+.bdg-b{background:rgba(59,130,246,0.15);color:#3b82f6}
+
+/* ── Tabs ───────────────────────────────────── */
+.tabs{display:flex;gap:2px;margin-bottom:6px;background:rgba(255,255,255,0.02);border-radius:5px;padding:2px;border:1px solid rgba(255,255,255,0.05)}
+.tabs .tab{flex:1;text-align:center;padding:5px 0;font-size:11px;font-weight:500;border-radius:4px;cursor:pointer;color:#7a7f8c;transition:all 0.1s}
+.tabs .tab.act{background:rgba(255,230,0,0.10);color:#FFE600;font-weight:600}
+
+/* ── Utility ────────────────────────────────── */
+.flex{display:flex;gap:5px;flex-wrap:wrap}
+.flex .btn{flex:1;min-width:50px;margin:0}
+.hide{display:none !important}
+.mt2{margin-top:5px}
+.mb2{margin-bottom:5px}
+.tc{text-align:center}
+.tr{text-align:right}
+.gap{gap:5px}
+.fade{animation:fadeIn 0.15s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
+.stts{font-size:11px;color:#5a5e6a;padding:5px 14px;text-align:center;border-top:1px solid rgba(255,255,255,0.05);position:sticky;bottom:0;background:#0b0c0f}
+
+/* ── Collapsible ────────────────────────────── */
+.col-hdr{display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding:3px 0}
+.col-hdr .arr{font-size:9px;color:#7a7f8c;transition:transform 0.15s}
+.col-hdr.open .arr{transform:rotate(90deg)}
+.col-bd{overflow:hidden;transition:max-height 0.2s ease}
+
+/* ── Tooltip ────────────────────────────────── */
+.tip{position:relative;cursor:help;border-bottom:1px dashed rgba(255,255,255,0.15)}
+.tip:hover:after{content:attr(data-tip);position:absolute;bottom:100%;left:0;background:#1a1c23;color:#e4e6ef;padding:5px 7px;border-radius:4px;font-size:11px;white-space:nowrap;z-index:200;border:1px solid rgba(255,255,255,0.07);pointer-events:none}
+
+/* ── Copy btn ───────────────────────────────── */
+.cp-btn{background:none;border:none;color:#5a5e6a;cursor:pointer;font-size:11px;padding:2px 5px;border-radius:3px}
+.cp-btn:hover{color:#FFE600;background:rgba(255,230,0,0.08)}
+
+/* ── Weight badge ───────────────────────────── */
+.w-badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;padding:2px 5px;border-radius:3px}
+.w-badge.v{background:rgba(59,130,246,0.15);color:#3b82f6}
+.w-badge.g{background:rgba(16,185,129,0.15);color:#10b981}
+
+/* ── Status dot ─────────────────────────────── */
+.stat-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px}
+.stat-dot.g{background:#10b981}
+.stat-dot.r{background:#fb7185}
+.stat-dot.y{background:#FFE600}
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <h1>🧮 FVV计算器</h1>
+  <div class="s">拉美跨境 · 4种利润模式 · 6国对账单</div>
+  <div id="authStatus" class="auth-bar">🔑 验证中...</div>
+</div>
+
+<!-- ── Profit Mode ──────────────────────────── -->
+<div class="sec">
+  <div class="st">📊 利润模式</div>
+  <select class="sel" id="profitMode">
+    <option value="profit_value">💰 利润值 ¥ — 输入期望利润(人民币)</option>
+    <option value="net_margin">📈 目标毛利率 % — 占净收比例</option>
+    <option value="sale_margin">🏷️ 售价利润率 % — 占售价比例</option>
+    <option value="cost_margin">📦 成本利润率 % — 占成本比例</option>
+  </select>
+  <div class="row" id="targetRow">
+    <span class="lb" id="targetLabel" style="flex:0 0 auto;margin:0;line-height:28px">期望利润 ¥</span>
+    <input class="inp inp-g" id="targetValue" placeholder="0.00" style="flex:1;text-align:right" value="50" />
+  </div>
+</div>
+
+<!-- ── Input Params ─────────────────────────── -->
+<div class="sec">
+  <div class="st">📦 商品参数</div>
+  <div class="g2">
+    <div>
+      <span class="lb">采购成本 ¥</span>
+      <input class="inp" id="purchaseCost" placeholder="0.00" value="100" />
+    </div>
+    <div>
+      <span class="lb">毛重 (g)</span>
+      <input class="inp" id="grossWeight" placeholder="0.0" value="500" />
+    </div>
+  </div>
+  <div class="g3 mt2">
+    <div>
+      <span class="lb">长 (cm)</span>
+      <input class="inp" id="length" placeholder="0" value="20" />
+    </div>
+    <div>
+      <span class="lb">宽 (cm)</span>
+      <input class="inp" id="width" placeholder="0" value="15" />
+    </div>
+    <div>
+      <span class="lb">高 (cm)</span>
+      <input class="inp" id="height" placeholder="0" value="10" />
+    </div>
+  </div>
+  <div class="g2 mt2">
+    <div>
+      <span class="lb">国内运费 ¥</span>
+      <input class="inp" id="domesticShip" placeholder="0.00" value="0" />
+    </div>
+    <div>
+      <span class="lb">打包费 ¥</span>
+      <input class="inp" id="packFee" placeholder="0.00" value="4" />
+    </div>
+  </div>
+  <div class="g2 mt2">
+    <div>
+      <span class="lb">货损率 %</span>
+      <input class="inp" id="lossRate" placeholder="5" value="5" />
+    </div>
+    <div>
+      <span class="lb">折扣 %</span>
+      <input class="inp" id="discountRate" placeholder="30" value="30" />
+    </div>
+  </div>
+  <div class="mt2" id="weightSummary">
+    <span class="w-badge v" id="volBadge">📦 泡重: -- g</span>
+    <span class="w-badge g" id="grossBadge">⚖️ 毛重: -- g</span>
+    <span class="bdg bdg-y" id="billBadge">📊 计费重: -- g</span>
+  </div>
+</div>
+
+<!-- ── FX Rate ──────────────────────────────── -->
+<div class="sec">
+  <div class="st">💱 汇率设置</div>
+  <div class="g2">
+    <div>
+      <span class="lb">USD/CNY</span>
+      <input class="inp" id="fxCny" placeholder="7.25" value="7.25" />
+    </div>
+    <div>
+      <span class="lb">USD/当地币 (自动)</span>
+      <input class="inp" id="fxLocal" placeholder="--" readonly style="color:#9ea3ae" />
+    </div>
+  </div>
+  <div class="row mt2">
+    <button class="btn btn-s" id="fetchFxBtn" style="flex:1">🌐 拉取在线汇率</button>
+    <span class="bdg bdg-b" id="fxStatus">离线</span>
+  </div>
+</div>
+
+<!-- ── Calculate Button ─────────────────────── -->
+<div class="sec">
+  <button class="btn btn-p" id="calcBtn">🧮 计算全部国家</button>
+</div>
+
+<!-- ── Country Cards ────────────────────────── -->
+<div class="sec" id="cardsSection">
+  <div class="st">🌍 6国结果 <span class="bdg bdg-y" id="selectedCountry">未选择</span></div>
+  <div class="cgrid" id="countryCards"></div>
+</div>
+
+<!-- ── Settlement / 对账单 ──────────────────── -->
+<div class="sec" id="settlementSection" style="display:none">
+  <div class="col-hdr open" id="settlementToggle">
+    <div class="st-ic" style="margin:0">📋 对账单 · 公式拆解</div>
+    <div class="arr" style="color:#7a7f8c;font-size:10px">▶</div>
+  </div>
+  <div class="col-bd" id="settlementBody">
+    <div class="res-panel" id="settlementContent">
+      <div class="r-line"><span class="r-l">选择国家后计算</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Shipping Table ───────────────────────── -->
+<div class="sec" id="shippingSection" style="display:none">
+  <div class="col-hdr open" id="shipToggle">
+    <div class="st-ic" style="margin:0">🚚 运费表 · <span id="shipCountryName">--</span></div>
+    <div class="arr" style="color:#7a7f8c;font-size:10px">▶</div>
+  </div>
+  <div class="col-bd" id="shipBody">
+    <div style="font-size:11px;color:#7a7f8c;margin-bottom:4px">
+      计费重: <b id="shipBillWeight">-- g</b> · 阈值: <b id="shipThreshold">--</b>
+      <span id="shipThresholdStatus" class="bdg bdg-y" style="margin-left:4px">⬇ 低阈值运费</span>
+    </div>
+    <table class="ship-tbl" id="shipTable">
+      <thead><tr><th>重量上限</th><th>低阈值运费</th><th>高阈值运费</th><th style="text-align:right">当前</th></tr></thead>
+      <tbody id="shipBodyRows"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ── Forward / Reverse Mode ───────────────── -->
+<div class="sec">
+  <div class="tabs" id="calcTabs">
+    <div class="tab act" data-mode="forward">正向计算</div>
+    <div class="tab" data-mode="reverse">反向(按售价)</div>
+  </div>
+  <div id="forwardSection">
+    <span class="lb">折后售价 (USD)</span>
+    <div class="row">
+      <input class="inp" id="salePriceUsd" placeholder="0.00" style="flex:1" />
+      <button class="btn btn-s" id="forwardCalcBtn" style="flex:0;min-width:65px;padding:6px 8px">反推</button>
+    </div>
+  </div>
+  <div id="reverseSection" class="hide">
+    <span class="lb">目标利润 (USD)</span>
+    <div class="row">
+      <input class="inp" id="targetProfitUsd" placeholder="0.00" style="flex:1" />
+      <button class="btn btn-s" id="reverseCalcBtn" style="flex:0;min-width:65px;padding:6px 8px">反推售价</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Actions ──────────────────────────────── -->
+<div class="sec" style="border-bottom:none">
+  <div class="flex">
+    <button class="btn btn-s" id="copyBtn" style="flex:1">📋 复制结果</button>
+    <button class="btn btn-s" id="resetBtn" style="flex:1">🔄 重置</button>
+  </div>
+</div>
+
+<div class="stts">FVV v2.0 · 回车计算 · 点击卡片查看对账单 · 佣金率可编辑</div>
+
+<script src="sidepanel.js"></script>
+</body>
+</html>

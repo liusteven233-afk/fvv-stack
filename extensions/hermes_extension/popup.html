@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+    body{width:380px;padding:0;background:#0A0A0F;color:#E8E8F0;font-size:14px}
+    .hd{background:linear-gradient(135deg,#0A0A0F,#1A1A2E);border-bottom:1px solid rgba(255,230,0,0.15);padding:14px 16px;text-align:center}
+    .hd h1{font-size:18px;color:#FFE600;font-weight:700;letter-spacing:-0.5px}
+    .hd .s{font-size:13px;color:#8888A0;margin-top:2px}
+    .section{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.04)}
+    .section:last-child{border-bottom:none}
+    .sec-title{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#8888A0;margin-bottom:8px;font-weight:600}
+    .btn{display:block;width:100%;padding:8px 12px;border-radius:8px;border:none;font-size:15px;font-weight:600;cursor:pointer;transition:all;margin-bottom:6px;text-align:center;text-decoration:none}
+    .btn-primary{background:linear-gradient(135deg,#FFE600,#FFC107);color:#0A0A0F}
+    .btn-primary:hover{box-shadow:0 2px 12px rgba(255,230,0,0.3)}
+    .btn-secondary{background:rgba(255,255,255,0.05);color:#AAAAB8;border:1px solid rgba(255,255,255,0.08)}
+    .btn-secondary:hover{background:rgba(255,255,255,0.08);color:#E8E8F0}
+    .input{width:100%;padding:7px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#E8E8F0;font-size:14px;outline:none;margin-bottom:6px}
+    .input:focus{border-color:#FFE600}
+    .status{font-size:13px;color:#666;padding:8px 16px;text-align:center}
+    .tag{display:inline-block;padding:2px 6px;border-radius:4px;font-size:12px;background:rgba(255,230,0,0.1);color:#FFE600;margin-left:4px}
+    .flex{display:flex;gap:6px}
+    .flex .btn{flex:1}
+  </style>
+</head>
+<body>
+  <div class="hd">
+    <h1>🛒 Hermes 跨境核价</h1>
+    <div class="s">1688 → Mercado Libre · 一键扒取</div>
+  </div>
+
+  <div class="section">
+    <div class="sec-title">📋 快速操作</div>
+    <a href="http://localhost:8501" target="_blank" class="btn btn-primary">🚀 打开核价面板</a>
+    <button class="btn btn-secondary" id="scrapeCurrent">📦 扒取当前1688商品</button>
+  </div>
+
+  <div class="section">
+    <div class="sec-title">🔗 手动输入链接</div>
+    <input class="input" id="urlInput" placeholder="1688商品链接（可选）" />
+    <div class="flex">
+      <button class="btn btn-secondary" id="sendUrl">发送到面板</button>
+      <button class="btn btn-secondary" id="clearUrl">清空</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-title">💱 实时汇率 <span class="tag">自动</span></div>
+    <div id="fxDisplay" style="font-size:14px;color:#8888A0;">加载中...</div>
+  </div>
+
+  <div class="status">Hermes v1.0 · 数据来自 localhost:8501</div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

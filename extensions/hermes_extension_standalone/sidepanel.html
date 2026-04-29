@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+/* ─── Reset & Base ───────────────────────────── */
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter','system-ui',-apple-system,'Segoe UI',sans-serif}
+body{width:100%;min-height:100vh;background:#0b0c0f;color:#e4e6ef;padding:0;overflow-x:hidden;font-size:14px}
+
+/* ─── Header ──────────────────────────────────── */
+.hd{background:linear-gradient(135deg,#0d0e12,#12141a);border-bottom:1px solid rgba(255,230,0,0.10);padding:12px 14px;text-align:center;position:sticky;top:0;z-index:10}
+.hd h1{font-size:16px;color:#FFE600;font-weight:700;letter-spacing:-0.3px}
+.hd .s{font-size:10px;color:#7a7f8c;margin-top:2px;letter-spacing:0.3px}
+
+/* ─── Section common ─────────────────────────── */
+.sec{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.04)}
+.st{font-size:11px;text-transform:uppercase;letter-spacing:0.8px;color:#7a7f8c;margin-bottom:6px;font-weight:600}
+.sec:last-of-type{border-bottom:none}
+
+/* ─── Buttons ────────────────────────────────── */
+.btn{display:block;width:100%;padding:7px 10px;border-radius:6px;border:none;font-size:13px;font-weight:500;cursor:pointer;margin-bottom:4px;text-align:center;transition:all 0.12s ease}
+.btn-p{background:linear-gradient(135deg,#FFE600,#e0c800);color:#0b0c0f;font-weight:600}
+.btn-p:hover{box-shadow:0 2px 12px rgba(255,230,0,0.18);transform:translateY(-0.5px)}
+.btn-p:active{transform:translateY(0)}
+.btn-s{background:rgba(255,255,255,0.03);color:#9ea3ae;border:1px solid rgba(255,255,255,0.06)}
+.btn-s:hover{background:rgba(255,255,255,0.07);color:#e4e6ef;border-color:rgba(255,255,255,0.10)}
+.btn-s.on{background:rgba(255,230,0,0.08);color:#FFE600;border-color:rgba(255,230,0,0.22)}
+
+/* ─── Inputs ─────────────────────────────────── */
+.inp{width:100%;padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.03);color:#e4e6ef;font-size:13px;outline:none;margin-bottom:4px;transition:border-color 0.12s}
+.inp:focus{border-color:#FFE600;box-shadow:0 0 0 2px rgba(255,230,0,0.10)}
+.inp::placeholder{color:#5a5e6a}
+.inp-s{width:100%;padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.03);color:#7a7f8c;font-size:12px;outline:none;margin-bottom:4px;appearance:none}
+
+/* ─── FX display ─────────────────────────────── */
+.fx{font-size:11px;color:#7a7f8c;line-height:1.7}
+.fx b{color:#adb1bb}
+
+/* ─── Status bar ─────────────────────────────── */
+.stts{font-size:10px;color:#4a4e58;padding:5px 14px;text-align:center;border-top:1px solid rgba(255,255,255,0.04);position:sticky;bottom:0;background:#0b0c0f;letter-spacing:0.2px}
+
+/* ─── Layout helpers ─────────────────────────── */
+.flex{display:flex;gap:4px;flex-wrap:wrap}
+.flex .btn{flex:1;min-width:52px;padding:5px 6px;font-size:11px;margin:0}
+.row{display:flex;gap:4px;align-items:center}
+.row .inp{margin:0}
+.badge{display:inline-block;padding:1px 5px;border-radius:3px;font-size:10px;background:rgba(255,230,0,0.10);color:#FFE600;margin-left:4px;font-weight:500}
+.mini{font-size:11px;color:#5a5e6a;margin-top:3px;padding:0 2px}
+
+/* ─── Results ────────────────────────────────── */
+.res{font-size:12px;color:#9ea3ae;margin-top:4px;padding:6px 8px;border-radius:5px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05)}
+.res .l{color:#6a6e7a;font-size:10px;display:block;margin-bottom:1px}
+.res .v{font-weight:600;font-size:13px;display:block;margin-bottom:2px}
+.res .v:last-child{margin-bottom:0}
+
+/* ─── Tabs ───────────────────────────────────── */
+.tabs{display:flex;gap:2px;margin-bottom:6px;background:rgba(255,255,255,0.03);border-radius:6px;padding:2px;border:1px solid rgba(255,255,255,0.05)}
+.tabs .tab{flex:1;text-align:center;padding:4px 0;font-size:11px;font-weight:500;border-radius:4px;cursor:pointer;color:#7a7f8c;transition:all 0.1s}
+.tabs .tab.act{background:rgba(255,230,0,0.08);color:#FFE600;font-weight:600}
+.tabs .tab:hover:not(.act){color:#adb1bb}
+
+/* ─── Country tabs ───────────────────────────── */
+.ctab{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:2px}
+.ctab button{flex:1;padding:4px 6px;font-size:11px;min-width:auto;margin:0}
+.ctab .act{background:rgba(255,230,0,0.10);color:#FFE600;border:1px solid rgba(255,230,0,0.20);border-radius:4px;font-weight:600;cursor:default;padding:4px 6px;font-size:11px}
+.ctab .ina{background:rgba(255,255,255,0.03);color:#7a7f8c;border:1px solid rgba(255,255,255,0.06);border-radius:4px;cursor:pointer;padding:4px 6px;font-size:11px;transition:all 0.1s}
+.ctab .ina:hover{color:#e4e6ef;background:rgba(255,255,255,0.06)}
+
+/* ─── Reverse profit % pills ─────────────────── */
+.pills{display:flex;gap:4px;margin-bottom:6px}
+.pills .btn{flex:1;min-width:42px;padding:4px 4px;font-size:11px;margin:0;text-align:center}
+
+/* ─── Animations ─────────────────────────────── */
+.fade{animation:fadeIn 0.15s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── Hint ───────────────────────────────────── */
+.hint{font-size:10px;color:#4a4e58;margin-bottom:5px;font-style:italic}
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <h1>🛒 ⌯  Hermes 独立核价</h1>
+  <div class="s">1688 → ML · 反向定价 · 6站对比</div>
+</div>
+
+<div class="sec">
+  <div class="st">📍 目标站点</div>
+  <div class="ctab" id="siteBtns"></div>
+</div>
+
+<div class="sec">
+  <div class="st">🧮 计算模式</div>
+  <div class="tabs" id="modeTabs">
+    <div class="tab act" data-mode="calc" id="tabCalc">核价</div>
+    <div class="tab" data-mode="reverse" id="tabRev">反向</div>
+    <div class="tab" data-mode="compare" id="tabComp">对比</div>
+  </div>
+</div>
+
+<!-- ─── Calc Mode ─────────────────────────────── -->
+<div class="sec" id="calcSection">
+  <div class="st">📦 扒取 / 输入</div>
+  <button class="btn btn-s" id="scrapeBtn">📥 扒取1688</button>
+  <div id="scrapeResult" class="mini"></div>
+  <div class="row" style="margin:4px 0">
+    <input class="inp" id="inpPrice" placeholder="售价 (当地币)" style="flex:1;margin:0" />
+    <input class="inp" id="inpWeight" placeholder="kg" style="width:52px;margin:0" />
+  </div>
+  <input class="inp" id="inpSourcing" placeholder="1688货源价 ¥" />
+  <button class="btn btn-p" id="calcBtn">🧮 计算利润</button>
+  <div id="calcResult"></div>
+</div>
+
+<!-- ─── Reverse Mode ──────────────────────────── -->
+<div class="sec" id="revSection" style="display:none">
+  <div class="st">🎯 反向定价</div>
+  <div class="hint">输入数据，反推需要卖多少钱</div>
+  <div class="row" style="margin:4px 0">
+    <input class="inp" id="revWeight" placeholder="重量 kg" style="flex:1;margin:0" />
+    <input class="inp" id="revSourcing" placeholder="货源价 ¥" style="flex:1;margin:0" />
+  </div>
+  <div class="pills">
+    <button class="btn btn-s on" data-pct="10">10%</button>
+    <button class="btn btn-s" data-pct="15">15%</button>
+    <button class="btn btn-s on" data-pct="20">20%</button>
+    <button class="btn btn-s" data-pct="25">25%</button>
+    <button class="btn btn-s" data-pct="30">30%</button>
+  </div>
+  <input class="inp" id="revProfitUsd" placeholder="💵 净利润(USD) — 按利润计算" />
+  <div class="flex" style="margin-bottom:4px;gap:4px">
+    <button class="btn btn-p" id="revBtn" style="flex:1">📊 反向定价</button>
+    <button class="btn btn-p" id="revProfitBtn" style="flex:1">📊 反向(按利润)</button>
+  </div>
+  <div id="revResult"></div>
+</div>
+
+<!-- ─── Compare Mode ──────────────────────────── -->
+<div class="sec" id="cmpSection" style="display:none">
+  <div class="st">🌍 全站对比</div>
+  <div class="hint">统一数据 → 对比6站利润排名</div>
+  <input class="inp" id="cmpPrice" placeholder="售价 (USD)" />
+  <div class="row" style="margin:4px 0">
+    <input class="inp" id="cmpWeight" placeholder="重量 kg" style="flex:1;margin:0" />
+    <input class="inp" id="cmpSourcing" placeholder="货源价 ¥" style="flex:1;margin:0" />
+  </div>
+  <button class="btn btn-p" id="cmpBtn">🌍 全站对比</button>
+  <div id="cmpResult"></div>
+</div>
+
+<div class="sec" style="border-bottom:none">
+  <div class="st">💱 实时汇率 <span class="badge" id="fxBadge">自动</span></div>
+  <div class="fx" id="fxDisp">获取中...</div>
+  <button class="btn btn-s" id="refreshFxBtn" style="margin-top:4px">🔄 刷新汇率</button>
+</div>
+
+<div class="stts">Hermes v3.1 · Enter=计算 · 6站对比</div>
+
+<script src="sidepanel.js"></script>
+</body>
+</html>

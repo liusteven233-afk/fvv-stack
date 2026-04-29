@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "Hermes 跨境核价助手",
+  "version": "1.2",
+  "description": "1688 → Mercado Libre 跨境选品核价助手，侧边栏常驻",
+  "permissions": ["activeTab", "storage", "sidePanel"],
+  "host_permissions": [
+    "http://localhost/*",
+    "http://localhost:8501/*",
+    "http://mzls233.cloud:8080/*",
+    "https://detail.1688.com/*"
+  ],
+  "action": {
+    "default_title": "Hermes 跨境核价",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://detail.1688.com/offer/*"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}

@@ -1,0 +1,50 @@
+#!/bin/bash
+# Hermes CLI Chat — tmux persistent session
+# Close terminal freely, reconnect anytime with:
+#   hc                       # attach (resume)
+#   hc-new                   # force new session
+SESSION="hermes-chat"
+
+if [ "$1" = "new" ]; then
+    tmux kill-session -t "$SESSION" 2>/dev/null
+fi
+
+# Create session if not running
+if ! tmux has-session -t "$SESSION" 2>/dev/null; then
+    # Auto-start dashboard if not running
+    if ! curl -s -o /dev/null http://localhost:8501 2>/dev/null; then
+        echo "Starting Dashboard (port 8501)..."
+        nohup /home/mzls233/dashboard_env/bin/streamlit run \
+            /home/mzls233/hermes_dashboard.py \
+            --server.port 8501 --server.headless true \
+            > /home/mzls233/dashboard.log 2>&1 &
+        sleep 5
+    fi
+
+    # Wait for Chrome CDP if Windows hasn't fully booted yet
+    if ! curl -s http://127.0.0.1:9222/json/version > /dev/null 2>&1; then
+        echo "Waiting for Chrome remote debugger (port 9222)..."
+        for i in 1 2 3 4 5 6 7 8 9 10; do
+            if curl -s http://127.0.0.1:9222/json/version > /dev/null 2>&1; then
+                echo "Chrome ready"
+                break
+            fi
+            sleep 2
+        done
+    fi
+
+    tmux new-session -d -s "$SESSION" -x 120 -y 20 "hermes chat"
+    # Wait for hermes to boot up
+    for i in 1 2 3 4 5 6 7 8; do
+        tmux capture-pane -t "$SESSION" -p 2>/dev/null | grep -q "local ❯" && break
+        sleep 1
+    done
+fi
+
+# Attach if we're in a real terminal
+if [ -t 0 ]; then
+    exec tmux attach-session -t "$SESSION"
+else
+    echo "Hermes chat running in tmux session '$SESSION'"
+    echo "Reconnect: tmux attach -t $SESSION"
+fi

@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "FVV计算器 · 拉美跨境定价",
+  "version": "2.0",
+  "description": "6国计算 · 4种利润模式 · 对账单 · 运费表",
+  "permissions": ["storage", "sidePanel"],
+  "host_permissions": [
+    "https://open.er-api.com/*",
+    "https://api.frankfurter.dev/*"
+  ],
+  "action": {
+    "default_title": "FVV计算器",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}

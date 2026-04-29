@@ -1,0 +1,3 @@
+@reboot sleep 15 && /usr/bin/tmux new-session -d -s hermes-chat -x 120 -y 20 "hermes chat" > /dev/null 2>&1
+@reboot sleep 30 && /home/mzls233/dashboard_env/bin/streamlit run /home/mzls233/hermes_dashboard.py --server.port 8501 --server.headless true > /home/mzls233/dashboard.log 2>&1
+@reboot sleep 35 && python3 /home/mzls233/.local/bin/ollama-proxy.py > /dev/null 2>&1
