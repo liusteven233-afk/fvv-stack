@@ -129,6 +129,9 @@ function initApp(expiry) {
   $('resetBtn').addEventListener('click', resetAll);
   $('salePriceUsd').addEventListener('keydown', e => { if (e.key === 'Enter') doForwardCalc(); });
   $('targetProfitUsd').addEventListener('keydown', e => { if (e.key === 'Enter') doReverseCalc(); });
+  $('compPrice').addEventListener('keydown', e => { if (e.key === 'Enter') doCompCalc(); });
+  $('compWeight').addEventListener('keydown', e => { if (e.key === 'Enter') doCompCalc(); });
+  $('compCalcBtn').addEventListener('click', doCompCalc);
 
   // Auto-recalculate on input changes (debounced)
   ['purchaseCost','grossWeight','length','width','height','domesticShip','packFee','lossRate','discountRate','targetValue','fxCny','fxLocal'].forEach(id => {
@@ -355,6 +358,14 @@ function calculate(ck) {
         saleUsd = (actualCost * (1 + m) / rateUsdRmb + shipUsd) / (1 - commRate);
         break;
       }
+      case 'net_profit_margin': {
+        // netUsd = (costUsd + 0.5) * (1 + targetVal/100)
+        const m = targetVal / 100;
+        const baseUsd = costUsd + 0.5;
+        const targetNetUsd = baseUsd * (1 + m);
+        saleUsd = (targetNetUsd + shipUsd) / (1 - commRate);
+        break;
+      }
       default:
         return null;
     }
@@ -458,7 +469,7 @@ function renderCards() {
         npHtml = `<div class="np no">❌ ${r.error}</div>`;
       } else {
         const cls = r.ok ? 'ok' : 'no';
-        npHtml = `<div class="np ${cls}">${r.ok ? '✅' : '⚠️'} ¥${r.profitCny.toFixed(2)}</div>`;
+        npHtml = `<div class="np ${cls}">$${r.netUsd.toFixed(2)}</div>`;
       }
     }
     const comm = getCommission(ck);
@@ -466,7 +477,7 @@ function renderCards() {
       <span class="flag">${c.flag}</span><span class="cn">${c.name}</span>
       <span class="tag g"><input class="comm-input" data-ck="${ck}" type="number" step="0.1" min="0.1" max="99.9" value="${comm}" />%</span>
       <div class="cr">${c.symbol} · T:${THRESHOLDS[ck]}</div>
-      <div class="cl">${r && !r.error ? `售价: ${c.symbol}${formatLocal(r.localPrice, ck)} | 利润: ¥${r.profitCny.toFixed(2)}` : '点击计算'}</div>
+      <div class="cl">${r && !r.error ? `售价: ${c.symbol}${formatLocal(r.localPrice, ck)} | 到账: $${r.netUsd.toFixed(2)}` : '点击计算'}</div>
       ${npHtml}
     </div>`;
   }).join('');
@@ -514,6 +525,10 @@ function selectCountry(ck) {
   // Update FX local display
   const fxLocal = getFXLocal(ck);
   $('fxLocal').value = fxLocal.toFixed(4);
+
+  // Update competitor currency badge
+  const compCur = $('compCurrency');
+  if (compCur) compCur.textContent = COUNTRIES[ck].symbol;
 }
 
 function updateSettlement(ck) {
@@ -539,7 +554,7 @@ function updateSettlement(ck) {
     <div class="r-line"><span class="r-l">平台佣金 (${r.commission}%)</span><span class="r-r r">-$${r.commUsd.toFixed(2)}</span></div>
     <div class="r-line"><span class="r-l">平台运费 (${r.useBelow ? '低阈值' : '高阈值'})</span><span class="r-r r">-$${r.shipUsed.toFixed(2)}</span></div>
     <div class="r-div"></div>
-    <div class="r-line"><span class="r-l" style="font-weight:600">净收益 (USD)</span><span class="r-r g" style="font-size:16px;font-weight:700">$${r.netUsd.toFixed(2)}</span></div>
+    <div class="r-line"><span class="r-l" style="font-weight:600;font-size:14px">🚀 到账 (净利润/USD)</span><span class="r-r g" style="font-size:19px;font-weight:700">$${r.netUsd.toFixed(2)}</span></div>
     <div class="r-line"><span class="r-l">净收益 (CNY)</span><span class="r-r">¥${r.netCny.toFixed(2)}</span></div>
     <div class="r-div"></div>
     <div class="r-hdr">📦 成本拆解</div>
@@ -659,7 +674,7 @@ function doForwardCalc() {
   calcResults[ck] = result;
   renderCards();
   selectCountry(ck);
-  showToast(`✅ 正向计算: 利润 ¥${profitCny.toFixed(2)} / 毛利率 ${actualMargin.toFixed(1)}%`, '#10b981');
+  showToast(`✅ 正向: 到账 $${netUsd.toFixed(2)} / 利润 ¥${profitCny.toFixed(2)}`, '#10b981');
 }
 
 function doReverseCalc() {
@@ -715,6 +730,63 @@ function doReverseCalc() {
   doForwardCalc(); // trigger update
 }
 
+// ── 竞品算到账 ──────────────────────────────────
+function doCompCalc() {
+  if (!selectedCountry) {
+    showToast('⚠️ 请先选择国家', '#fb7185');
+    return;
+  }
+  const compPrice = parseFloat($('compPrice').value);
+  if (!compPrice || compPrice <= 0) {
+    showToast('⚠️ 请填写竞品当地售价', '#fb7185');
+    return;
+  }
+  const ck = selectedCountry;
+  const c = COUNTRIES[ck];
+  const rateUsdLocal = getFXLocal(ck);
+  const commission = getCommission(ck);
+  const commRate = commission / 100;
+  const w = calcWeight();
+
+  // Weight: use compWeight if filled, else main form's billWeight
+  const compWeightG = parseFloat($('compWeight').value) || w.billWeight;
+  const billWeightKg = compWeightG / 1000;
+
+  const [shipAbove, shipBelow] = getShippingCost(ck, billWeightKg);
+  const saleUsd = compPrice / rateUsdLocal;
+  const localPrice = saleUsd * rateUsdLocal;
+
+  // Threshold check
+  const useBelow = localPrice < THRESHOLDS[ck];
+  const shipUsd = useBelow ? shipBelow : shipAbove;
+  const commUsd = saleUsd * commRate;
+  const netUsd = saleUsd - commUsd - shipUsd;
+
+  const resultEl = $('compResult');
+  resultEl.innerHTML = `
+    <div style="display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+      <span style="color:#7a7f8c">竞品售价 → USD</span>
+      <span>${c.symbol}${formatLocal(compPrice, ck)} → $${saleUsd.toFixed(2)}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+      <span style="color:#7a7f8c">佣金(${commission}%)</span>
+      <span style="color:#fb7185">-$${commUsd.toFixed(2)}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+      <span style="color:#7a7f8c">运费(${useBelow ? '低' : '高'}阈值)</span>
+      <span style="color:#fb7185">-$${shipUsd.toFixed(2)}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:3px 0;font-weight:700;font-size:15px">
+      <span style="color:#10b981">📥 到账 (净利润)</span>
+      <span style="color:#10b981;font-size:17px">$${netUsd.toFixed(2)}</span>
+    </div>
+    <div style="font-size:10px;color:#5a5e6a;margin-top:2px;text-align:center">
+      计费重: ${Math.round(billWeightKg * 1000)}g · 汇率: ${rateUsdLocal.toFixed(4)}
+    </div>
+  `;
+  showToast(`✅ 竞品到账: $${netUsd.toFixed(2)} (${c.name})`, '#10b981');
+}
+
 // ── Profit Mode ──────────────────────────────────
 function initProfitMode() {
   onProfitModeChange();
@@ -743,6 +815,11 @@ function onProfitModeChange() {
       label.textContent = '成本利润率 %';
       inp.placeholder = '25';
       if (!inp.value || inp.value === '50') inp.value = '25';
+      break;
+    case 'net_profit_margin':
+      label.textContent = '净利润毛利率 % (成本+$0.5为基数)';
+      inp.placeholder = '20';
+      if (!inp.value || inp.value === '50') inp.value = '20';
       break;
   }
 }

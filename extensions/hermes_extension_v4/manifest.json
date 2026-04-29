@@ -1,0 +1,45 @@
+{
+  "manifest_version": 3,
+  "name": "大帅比专用",
+  "version": "5.0",
+  "description": "1688 → ML 跨境选品 · 自动扒取 · 净利润计算 · 6站对比",
+  "permissions": ["activeTab", "storage", "sidePanel"],
+  "host_permissions": [
+    "http://localhost/*",
+    "http://localhost:8501/*",
+    "http://localhost:8502/*",
+    "http://mzls233.cloud:8080/*",
+    "https://detail.1688.com/*",
+    "https://*.1688.com/*"
+  ],
+  "action": {
+    "default_title": "Hermes 跨境核价",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://detail.1688.com/offer/*",
+        "https://s.1688.com/youyuan/*",
+        "https://*.1688.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}

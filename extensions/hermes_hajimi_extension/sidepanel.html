@@ -174,6 +174,7 @@ body{width:100%;min-height:100vh;background:#0b0c0f;color:#e4e6ef;padding:0;over
     <option value="net_margin">📈 目标毛利率 % — 占净收比例</option>
     <option value="sale_margin">🏷️ 售价利润率 % — 占售价比例</option>
     <option value="cost_margin">📦 成本利润率 % — 占成本比例</option>
+    <option value="net_profit_margin">📊 净利润毛利率 % — 成本×毛利率(各国到账不同)</option>
   </select>
   <div class="row" id="targetRow">
     <span class="lb" id="targetLabel" style="flex:0 0 auto;margin:0;line-height:28px">期望利润 ¥</span>
@@ -268,7 +269,7 @@ body{width:100%;min-height:100vh;background:#0b0c0f;color:#e4e6ef;padding:0;over
 <!-- ── Settlement / 对账单 ──────────────────── -->
 <div class="sec" id="settlementSection" style="display:none">
   <div class="col-hdr open" id="settlementToggle">
-    <div class="st-ic" style="margin:0">📋 对账单 · 公式拆解</div>
+    <div class="st-ic" style="margin:0">💵 净利润 (到账) · 公式拆解</div>
     <div class="arr" style="color:#7a7f8c;font-size:10px">▶</div>
   </div>
   <div class="col-bd" id="settlementBody">
@@ -315,6 +316,18 @@ body{width:100%;min-height:100vh;background:#0b0c0f;color:#e4e6ef;padding:0;over
       <input class="inp" id="targetProfitUsd" placeholder="0.00" style="flex:1" />
       <button class="btn btn-s" id="reverseCalcBtn" style="flex:0;min-width:65px;padding:6px 8px">反推售价</button>
     </div>
+    <!-- ── 竞品算到账 ── -->
+    <div style="height:1px;background:rgba(255,255,255,0.07);margin:6px 0"></div>
+    <div style="font-size:11px;color:#9ea3ae;font-weight:600;margin-bottom:4px">🔍 竞品算到账</div>
+    <div class="row">
+      <input class="inp" id="compPrice" placeholder="竞品当地售价" style="flex:1" />
+      <span id="compCurrency" class="bdg bdg-y" style="flex:0 0 auto">--</span>
+    </div>
+    <div class="row mt2">
+      <input class="inp" id="compWeight" placeholder="计费重(g)" style="flex:1" />
+      <button class="btn btn-s" id="compCalcBtn" style="flex:0;min-width:60px;padding:6px 8px">算到账</button>
+    </div>
+    <div id="compResult" style="font-size:12px;color:#7a7f8c;margin-top:5px;padding:5px 6px;background:rgba(255,255,255,0.02);border-radius:4px;min-height:22px"></div>
   </div>
 </div>
 

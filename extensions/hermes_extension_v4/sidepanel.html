@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+/* ═══ 大帅比专用 v5 — 超大字体 · 高对比 · 卡片式UI ═══ */
+
+/* ── Reset & Base ───────────────────────────── */
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:100%;min-height:100vh;background:#0f1117;color:#f0f2f8;padding:0;overflow-x:hidden;font-family:'Inter','SF Pro','PingFang SC','system-ui',-apple-system,sans-serif;font-size:15px;line-height:1.5}
+::selection{background:rgba(255,230,0,0.3);color:#fff}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#0f1117}
+::-webkit-scrollbar-thumb{background:#2e3140;border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#3e4152}
+
+/* ── Header ──────────────────────────────────── */
+.hd{background:linear-gradient(135deg,#11131a,#161822);border-bottom:1.5px solid rgba(255,230,0,0.15);padding:14px 16px 10px;position:sticky;top:0;z-index:100}
+.hd h1{font-size:20px;color:#FFE600;font-weight:800;letter-spacing:-0.5px}
+.hd .s{font-size:12px;color:#8a8fa0;margin-top:3px;letter-spacing:0.4px}
+
+/* ── Section ─────────────────────────────────── */
+.sec{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.sec:last-of-type{border-bottom:none}
+.sec-title{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#8a8fa0;margin-bottom:8px;font-weight:600}
+.sec-title .tag{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:600;background:rgba(16,185,129,0.15);color:#34d399;margin-left:6px;text-transform:none;letter-spacing:0}
+
+/* ── Site Buttons ───────────────────────────── */
+.site-btns{display:flex;gap:5px;flex-wrap:wrap}
+.site-btns button{flex:1;min-width:55px;padding:8px 6px;border-radius:8px;border:1.5px solid transparent;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.12s ease}
+.site-btns .s-act{background:rgba(16,185,129,0.12);border-color:#34d399;color:#34d399}
+.site-btns .s-ina{background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.08);color:#6b7084}
+.site-btns .s-ina:hover{background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.12);color:#d0d4e2}
+
+/* ── Mode Tabs ──────────────────────────────── */
+.mode-tabs{display:flex;gap:3px;background:rgba(255,255,255,0.03);border-radius:10px;padding:3px;border:1px solid rgba(255,255,255,0.07)}
+.mode-tabs .tab{flex:1;text-align:center;padding:7px 4px;font-size:13px;font-weight:600;border-radius:7px;cursor:pointer;color:#6b7084;transition:all 0.12s}
+.mode-tabs .tab.act{background:rgba(255,230,0,0.12);color:#FFE600;font-weight:700}
+.mode-tabs .tab:hover:not(.act){color:#b0b4c4}
+
+/* ── Inputs ──────────────────────────────────── */
+.inp{width:100%;padding:9px 11px;border-radius:8px;border:1.5px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#f0f2f8;font-size:15px;outline:none;transition:all 0.15s;margin-bottom:5px}
+.inp:focus{border-color:#FFE600;box-shadow:0 0 0 3px rgba(255,230,0,0.15)}
+.inp::placeholder{color:#4a4e5e;font-size:13px}
+.inp-sm{font-size:14px;padding:8px 10px}
+.inp-row{display:flex;gap:6px;align-items:center}
+.inp-row .inp{margin:0;flex:1}
+
+/* ── Buttons ─────────────────────────────────── */
+.btn{display:block;width:100%;padding:10px 14px;border-radius:8px;border:none;font-size:14px;font-weight:600;cursor:pointer;text-align:center;transition:all 0.12s ease;margin-bottom:4px}
+.btn-p{background:linear-gradient(135deg,#FFE600,#e6cf00);color:#0f1117;font-weight:700;font-size:15px}
+.btn-p:hover{box-shadow:0 4px 16px rgba(255,230,0,0.25);transform:translateY(-1px)}
+.btn-p:active{transform:translateY(0)}
+.btn-s{background:rgba(255,255,255,0.05);color:#a8adc0;border:1.5px solid rgba(255,255,255,0.08)}
+.btn-s:hover{background:rgba(255,255,255,0.09);color:#f0f2f8;border-color:rgba(255,255,255,0.12)}
+.btn-s.on{background:rgba(255,230,0,0.10);color:#FFE600;border-color:rgba(255,230,0,0.25)}
+.btn-row{display:flex;gap:6px}
+.btn-row .btn{flex:1;margin:0}
+
+/* ── Labels ──────────────────────────────────── */
+.lb{font-size:12px;color:#6b7084;display:block;margin-bottom:3px;font-weight:500}
+.lb-sm{font-size:10px;color:#4a4e5e;display:block;margin-bottom:2px}
+.hint{font-size:12px;color:#4a4e5e;margin-bottom:6px;font-style:italic}
+.sm-hint{font-size:11px;color:#3a3d4e;margin-top:3px}
+
+/* ── Profit Pill Buttons ────────────────────── */
+.pills{display:flex;gap:5px;margin-bottom:6px}
+.pills .btn{flex:1;min-width:40px;padding:7px 4px;font-size:13px;margin:0;text-align:center}
+
+/* ── Result Cards ────────────────────────────── */
+.res-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:12px 14px;margin-top:6px;animation:fadeIn 0.2s ease}
+.res-card .r-hdr{font-size:14px;color:#a8adc0;font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px}
+.res-card .r-line{display:flex;justify-content:space-between;padding:4px 0;font-size:14px;border-bottom:1px solid rgba(255,255,255,0.04)}
+.res-card .r-line:last-child{border-bottom:none}
+.res-card .r-l{color:#6b7084}
+.res-card .r-r{color:#f0f2f8;font-weight:500;text-align:right}
+.res-card .r-r.g{color:#34d399;font-weight:700}
+.res-card .r-r.r{color:#fb7185;font-weight:700}
+.res-card .r-r.y{color:#FFE600;font-weight:700}
+.res-card .r-r.b{color:#60a5fa;font-weight:700}
+.res-card .r-div{height:1px;background:rgba(255,255,255,0.07);margin:6px 0}
+.res-card .r-val{font-size:18px;font-weight:800;display:block;margin:4px 0}
+
+/* ── FX Display ─────────────────────────────── */
+.fx-disp{font-size:13px;color:#6b7084;line-height:1.8}
+.fx-disp b{color:#a8adc0;font-weight:600}
+.fx-badge{display:inline-block;padding:3px 8px;border-radius:5px;font-size:11px;font-weight:600}
+.fx-badge.on{background:rgba(16,185,129,0.15);color:#34d399}
+.fx-badge.off{background:rgba(251,191,36,0.12);color:#fbbf24}
+.fx-badge.cache{background:rgba(59,130,246,0.15);color:#60a5fa}
+
+/* ── Scrape Result ──────────────────────────── */
+.scrape-card{background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.15);border-radius:8px;padding:8px 10px;margin-top:4px;font-size:13px;color:#34d399}
+.scrape-card img{border-radius:6px;object-fit:cover}
+.scrape-card .s-title{display:block;font-size:12px;color:#8a8fa0;margin-top:2px}
+
+/* ── Utility ─────────────────────────────────── */
+.fade{animation:fadeIn 0.2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.mt2{margin-top:6px}
+.mt3{margin-top:10px}
+.mb2{margin-bottom:6px}
+.tc{text-align:center}
+.tr{text-align:right}
+.gap{gap:6px}
+.stts{font-size:11px;color:#3a3d4e;padding:6px 16px;text-align:center;border-top:1px solid rgba(255,255,255,0.04);position:sticky;bottom:0;background:#0f1117}
+
+/* ── Threshold Badge ────────────────────────── */
+.thr-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+.thr-badge.low{background:rgba(255,230,0,0.12);color:#FFE600}
+.thr-badge.high{background:rgba(59,130,246,0.15);color:#60a5fa}
+
+/* ── Status Dot ─────────────────────────────── */
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.dot.g{background:#34d399}
+.dot.r{background:#fb7185}
+.dot.y{background:#FFE600}
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <h1>🛒 大帅比专用 v5</h1>
+  <div class="s">1688 → ML跨境 · 每100g运费 · 阈值双价 · 自动扒取</div>
+  <div style="margin-top:3px;display:flex;align-items:center;gap:6px">
+    <span class="fx-badge cache" id="authStatus">🔑 验证中...</span>
+  </div>
+</div>
+
+<!-- ── 站点选择 ── -->
+<div class="sec">
+  <div class="sec-title">📍 目标站点</div>
+  <div class="site-btns" id="siteBtns"></div>
+</div>
+
+<!-- ── 模式切换 ── -->
+<div class="sec" style="padding-bottom:8px">
+  <div class="sec-title">🧮 计算模式</div>
+  <div class="mode-tabs" id="modeTabs">
+    <div class="tab act" data-mode="calc">💰 核价</div>
+    <div class="tab" data-mode="reverse">🎯 反向</div>
+    <div class="tab" data-mode="compare">🌍 对比</div>
+    <div class="tab" data-mode="cross">📊 跨境</div>
+    <div class="tab" data-mode="multi">📈 多模式</div>
+  </div>
+</div>
+
+<!-- ── 扒取区 ── -->
+<div class="sec" style="border-bottom:1.5px solid rgba(255,230,0,0.08)">
+  <div class="sec-title">📥 1688 扒取 <span class="tag">自动</span></div>
+  <div class="btn-row">
+    <button class="btn btn-s" id="scrapeBtn">📥 手动扒取</button>
+  </div>
+  <div id="scrapeResult"></div>
+  <div style="margin-top:4px">
+    <span style="font-size:11px;color:#4a4e5e">💡 货源价已含国内运费，无需另填</span>
+  </div>
+</div>
+
+<!-- ═══ 模式1: 核价 ═══ -->
+<div class="sec" id="calcSection">
+  <div class="sec-title">💰 核价 — 算净利润</div>
+  <div class="inp-row">
+    <input class="inp inp-sm" id="inpPrice" placeholder="ML售价 (当地货币)">
+  </div>
+  <div class="inp-row" style="gap:6px">
+    <input class="inp inp-sm" id="inpWeight" placeholder="重量 kg" style="flex:1">
+    <input class="inp inp-sm" id="inpSourcing" placeholder="货源价 ¥ (含运费)" style="flex:2">
+  </div>
+  <div class="btn-row mt2">
+    <button class="btn btn-p" id="calcBtn">💰 算利润</button>
+  </div>
+  <div id="calcResult"></div>
+</div>
+
+<!-- ═══ 模式2: 反向 ═══ -->
+<div class="sec" id="revSection" style="display:none">
+  <div class="sec-title">🎯 反向 — 已知货源求售价</div>
+  <div class="hint">填货源价+重量，选利润率 → 算需要卖多少钱 + 到账</div>
+  <div class="inp-row" style="gap:6px">
+    <input class="inp inp-sm" id="revWeight" placeholder="重量 kg" style="flex:1">
+    <input class="inp inp-sm" id="revSourcing" placeholder="货源价 ¥" style="flex:2">
+  </div>
+  <div class="pills">
+    <button class="btn btn-s on" data-pct="10">10%</button>
+    <button class="btn btn-s" data-pct="15">15%</button>
+    <button class="btn btn-s on" data-pct="20">20%</button>
+    <button class="btn btn-s" data-pct="25">25%</button>
+    <button class="btn btn-s" data-pct="30">30%</button>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-p" id="revBtn">📊 反向定价</button>
+  </div>
+  <div id="revResult"></div>
+</div>
+
+<!-- ═══ 模式3: 全站对比 ═══ -->
+<div class="sec" id="cmpSection" style="display:none">
+  <div class="sec-title">🌍 全站对比 — 6站利润排名</div>
+  <div class="hint">统一售价下，对比6个站点哪个利润最高</div>
+  <div class="inp-row" style="gap:6px">
+    <input class="inp inp-sm" id="cmpPrice" placeholder="售价 USD" style="flex:1">
+    <input class="inp inp-sm" id="cmpWeight" placeholder="kg" style="flex:1">
+    <input class="inp inp-sm" id="cmpSourcing" placeholder="货源价 ¥" style="flex:1">
+  </div>
+  <div class="btn-row mt2">
+    <button class="btn btn-p" id="cmpBtn">🌍 对比6站</button>
+  </div>
+  <div id="cmpResult"></div>
+</div>
+
+<!-- ═══ 模式4: 跨境 💰 ═══ -->
+<div class="sec" id="crossSection" style="display:none">
+  <div class="sec-title">📊 跨境净利润 — 阈值双价运费</div>
+  <div class="hint">ML跨境店售价不能改 → 填净利润算可行性（用阈值判断运费用高/低价）</div>
+  <div class="inp-row" style="gap:6px">
+    <input class="inp inp-sm" id="crossSourcing" placeholder="货源价 ¥ (含运费)" style="flex:2">
+    <input class="inp inp-sm" id="crossWeight" placeholder="kg" style="flex:1">
+  </div>
+  <div class="inp-row" style="gap:6px;margin-top:4px">
+    <input class="inp inp-sm" id="crossPrice" placeholder="ML售价 (已知时填)" style="flex:1.5">
+    <input class="inp inp-sm" id="crossProfitTarget" placeholder="目标净利润 ¥" style="flex:1">
+  </div>
+  <div class="btn-row mt2" style="gap:5px">
+    <button class="btn btn-s" id="crossCalcBtn" style="font-size:13px">📊 算利润</button>
+    <button class="btn btn-p" id="crossRevBtn" style="font-size:13px">🎯 反推售价</button>
+    <button class="btn btn-p" id="crossAllBtn" style="font-size:13px">🌍 6站对比</button>
+  </div>
+  <div class="sm-hint">💡 填货源+重量+目标净利润 → 点「反推售价」或「6站对比」</div>
+  <div id="crossResult"></div>
+</div>
+
+<!-- ═══ 模式5: 多模式 ═══ -->
+<div class="sec" id="multiSection" style="display:none">
+  <div class="sec-title">📈 多模式 — 6国同步计算</div>
+  <div class="inp-row" style="gap:6px;margin-bottom:6px">
+    <select class="inp inp-sm" id="multiMode" style="flex:2;margin:0;font-size:13px">
+      <option value="profit_value">💰 利润值 ¥</option>
+      <option value="net_margin">📈 目标毛利率 %</option>
+      <option value="sale_margin">🏷️ 售价利润率 %</option>
+      <option value="cost_margin">📦 成本利润率 %</option>
+      <option value="net_profit_margin">📊 净利润毛利率 % (成本+$0.5)</option>
+      <option value="forward_margin">📐 正向利润率 (成本-$0.5)</option>
+    </select>
+    <span id="multiTargetLabel" style="color:#8a8fa0;font-size:11px;white-space:nowrap">目标</span>
+    <input class="inp inp-sm" id="multiTarget" placeholder="0" style="flex:0.8;margin:0;text-align:right">
+  </div>
+  <div class="inp-row" style="gap:6px">
+    <input class="inp inp-sm" id="multiCost" placeholder="采购 ¥" style="flex:1">
+    <input class="inp inp-sm" id="multiWeight" placeholder="毛重 g" style="flex:1">
+  </div>
+  <div class="inp-row" style="gap:6px;margin-top:4px">
+    <input class="inp inp-sm" id="multiDom" placeholder="国内运费 ¥" style="flex:1">
+    <input class="inp inp-sm" id="multiPack" placeholder="打包费 ¥" style="flex:1">
+    <input class="inp inp-sm" id="multiLoss" placeholder="货损%" style="flex:0.7">
+    <input class="inp inp-sm" id="multiDisc" placeholder="折扣%" style="flex:0.7">
+  </div>
+  <div class="inp-row mt2" style="gap:6px">
+    <input class="inp inp-sm" id="multiLen" placeholder="长 cm" style="flex:1">
+    <input class="inp inp-sm" id="multiWid" placeholder="宽 cm" style="flex:1">
+    <input class="inp inp-sm" id="multiHei" placeholder="高 cm" style="flex:1">
+  </div>
+  <!-- 6国卡片 -->
+  <div class="site-btns mt2" id="multiCards"></div>
+  <div class="btn-row mt2">
+    <button class="btn btn-p" id="multiCalcBtn">🧮 计算全部国家</button>
+  </div>
+  <div id="multiResult" style="margin-top:6px"></div>
+</div>
+
+<!-- ── 汇率 ── -->
+<div class="sec">
+  <div class="sec-title">💱 实时汇率 <span class="fx-badge cache" id="fxBadge">加载中</span></div>
+  <div class="fx-disp" id="fxDisp">获取中...</div>
+  <div class="btn-row mt2">
+    <button class="btn btn-s" id="refreshFxBtn">🔄 刷新汇率</button>
+  </div>
+</div>
+
+<div class="stts">大帅比专用 v5 · 每100g运费 · 阈值双价 · ML佣金20% · Enter计算</div>
+
+<script src="sidepanel.js"></script>
+</body>
+</html>
