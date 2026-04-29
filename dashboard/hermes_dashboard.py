@@ -4,8 +4,21 @@ Hermes 跨境核价面板 v4.0
 1688 → Mercado Libre · 菜鸟运费 · 反向定价 · 多站对比 · AI聊天
 """
 import streamlit as st
-import requests, json, time as _time
+import requests, json, time as _time, os
 from datetime import datetime
+
+# ─── Config file for persistent settings ──────
+CONFIG_PATH = os.path.expanduser("~/.hermes/dashboard_config.json")
+def load_config():
+    try:
+        with open(CONFIG_PATH) as f: return json.load(f)
+    except: return {}
+def save_config(d):
+    os.makedirs(os.path.dirname(CONFIG_PATH), exist_ok=True)
+    with open(CONFIG_PATH, 'w') as f: json.dump(d, f)
+
+_cfg = load_config()
+_MASTER_PWD = _cfg.get("master_pwd", "fvv1123")
 
 st.set_page_config(page_title="Hermes 跨境核价", page_icon="🛒", layout="wide", initial_sidebar_state="collapsed")
 
@@ -34,7 +47,7 @@ ML_CUT = 0.80; BUFFER = 0.50
 
 # ─── Init ─────────────────────────────────────
 for k,v in {
-    "logged_in":False,"master_pwd":"fvv1123","exrates":{},
+    "logged_in":False,"master_pwd":_MASTER_PWD,"exrates":{},
     "ship":{k:list(v) for k,v in DEFAULT_SHIP.items()},
     "chat":[{"role":"ai","text":"👋 靓仔你好！选站点→填数据，或直接问我问题。"}],
     "hist":[],"theme":"dark","api_key":"","api_model":"deepseek-chat",
@@ -383,6 +396,22 @@ def ai_chat(messages):
 
 def render_settings():
     with st.expander("⚙️ 设置"):
+        st.markdown("**🔐 修改密码**")
+        old_pwd = st.text_input("当前密码", type="password", key="old_pwd_input")
+        new_pwd = st.text_input("新密码", type="password", key="new_pwd_input")
+        new_pwd2 = st.text_input("确认新密码", type="password", key="new_pwd2_input")
+        if st.button("🔑 修改密码", use_container_width=True, key="change_pwd"):
+            if not old_pwd: st.error("请输入当前密码")
+            elif old_pwd.strip() != st.session_state.master_pwd: st.error("❌ 当前密码错误")
+            elif not new_pwd or len(new_pwd.strip()) < 4: st.error("新密码至少4位")
+            elif new_pwd != new_pwd2: st.error("两次密码不一致")
+            else:
+                new_p = new_pwd.strip()
+                st.session_state.master_pwd = new_p
+                save_config({"master_pwd": new_p})
+                st.success("✅ 密码已修改，重启后仍生效")
+        st.markdown("---")
+
         st.markdown("**🤖 AI聊天配置**")
         ak=st.text_input("API密钥",type="password",value=st.session_state.api_key,key="ak_set",placeholder="sk-xxx...")
         am=st.text_input("模型名",value=st.session_state.api_model,key="am_set",help="deepseek-chat / gpt-4o-mini")
