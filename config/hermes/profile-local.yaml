@@ -1,0 +1,24 @@
+model:
+  default: deepseek-v4-flash
+  provider: deepseek
+  base_url: https://api.deepseek.com/
+  api_key: sk-ffe...7a29
+  context_length: 1000000
+providers:
+  custom:
+    type: openai
+    base_url: http://localhost:11434/v1
+  deepseek:
+    type: openai
+    base_url: https://api.deepseek.com
+auxiliary:
+  compression:
+    context_length: 1000000
+onboarding:
+  seen:
+    tool_progress_prompt: true
+    busy_input_prompt: true
+approvals:
+  mode: off
+security:
+  tirith_enabled: false

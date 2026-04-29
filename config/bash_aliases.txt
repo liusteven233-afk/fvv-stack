@@ -1,0 +1,7 @@
+# Hermes chat — tmux persistent session (close terminal without losing connection)
+alias hc='/home/mzls233/.local/bin/hermes-chat'
+alias hc-new='/home/mzls233/.local/bin/hermes-chat new'
+# Quick tmux commands
+alias tmux-ls='tmux list-sessions'
+alias tmux-kill='tmux kill-session -t hermes-chat'
+alias dash-up="nohup /home/mzls233/dashboard_env/bin/streamlit run /home/mzls233/hermes_dashboard.py --server.port 8501 > /home/mzls233/dashboard.log 2>&1 &"
