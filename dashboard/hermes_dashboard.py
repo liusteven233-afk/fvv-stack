@@ -4,8 +4,10 @@ Hermes 跨境核价面板 v4.0
 1688 → Mercado Libre · 菜鸟运费 · 反向定价 · 多站对比 · AI聊天
 """
 import streamlit as st
-import requests, json, time as _time, os
+import requests, json, time as _time, os, sys
 from datetime import datetime
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from scraper_1688 import render_scraper_page, scrape_1688, load_products, save_products
 
 # ─── Config file for persistent settings ──────
 CONFIG_PATH = os.path.expanduser("~/.hermes/dashboard_config.json")
@@ -52,7 +54,7 @@ for k,v in {
     "chat":[{"role":"ai","text":"👋 靓仔你好！选站点→填数据，或直接问我问题。"}],
     "hist":[],"theme":"dark","api_key":"","api_model":"deepseek-chat",
     "api_url":"https://api.deepseek.com/v1/chat/completions",
-    "last_ck":"MX","mode":"normal","profit_target":20.0,
+    "last_ck":"MX","mode":"normal","profit_target":20.0,"nav_page":"calc",
 }.items():
     if k not in st.session_state: st.session_state[k]=v
 
@@ -170,6 +172,11 @@ def css(t):
     .pr .y{{color:{ac};font-weight:600}}
     .btd{{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:4px}}
     .btd button{{font-size:0.65rem!important;padding:0.15rem 0.5rem!important}}
+    .nav-wrap{{margin:0.15rem 0 0.5rem;border-bottom:1px solid {bo};padding-bottom:0.4rem}}
+    .nav-link{{display:block;text-align:center;padding:0.3rem 0.15rem;border-radius:6px;font-size:0.7rem;font-weight:500;color:{sc};cursor:pointer;text-decoration:none;transition:all 0.15s;border:1px solid transparent}}
+    .nav-link:hover{{background:{ib};border-color:{bd};color:{tc}}}
+    .nav-link.ext{{border:1px dashed {bo}}}
+    .nav-link.ext:hover{{border-color:{ac}66}}
     </style>"""
 
 def country_btns():
@@ -182,6 +189,28 @@ def country_btns():
                         type="primary" if ck==k else "secondary"):
                 st.session_state["_ck"]=k;st.rerun()
     return st.session_state.get("_ck","MX")
+
+def render_nav():
+    pages=[
+        ("calc","📊","核价面板","",False),
+        ("platform","🌐","统一平台","https://mzls233.cloud",True),
+        ("jupyter","🔬","Jupyter","https://jupyter.mzls233.cloud",True),
+        ("alist","📁","Alist","https://alist.mzls233.cloud",True),
+        ("grafana","📈","Grafana","https://grafana.mzls233.cloud",True),
+        ("scraper","📦","1688爬虫","",False),
+        ("settings","⚙️","设置","",False),
+    ]
+    cur=st.session_state.get("nav_page","calc")
+    cos=st.columns(len(pages))
+    for i,(pid,ico,lbl,url,ext) in enumerate(pages):
+        with cos[i]:
+            if ext:
+                st.markdown(f'<a href="{url}" target="_blank" class="nav-link ext">{ico} {lbl} ↗</a>',
+                            unsafe_allow_html=True)
+            else:
+                tp="primary" if cur==pid else "secondary"
+                if st.button(f"{ico} {lbl}",key=f"nav_{pid}",use_container_width=True,type=tp):
+                    st.session_state.nav_page=pid;st.rerun()
 
 # ─── Calculator ─────────────────────────────
 def render_calc():
@@ -225,12 +254,22 @@ def render_calc():
                     else: show_res(res,ci,ck)
 
     elif m=="反向":
+        # Auto-fill from 1688 import
+        imported_sr = st.session_state.pop("_imported_price", None)
+        imported_wt = st.session_state.pop("_imported_weight", None)
+        imported_title = st.session_state.pop("_imported_title", None)
+
+        if imported_title:
+            st.info(f"📦 **{imported_title[:50]}**")
+
         st.caption("💡 输入数据，反推需要卖多少钱")
         c1,c2=st.columns(2)
         with c1:
-            wt2=st.number_input("📦重量(kg)",0.0,30.0,value=0.3,step=0.1,format="%.2f",key=f"rw_{ck}")
+            default_wt = imported_wt if imported_wt else 0.3
+            wt2=st.number_input("📦重量(kg)",0.0,30.0,value=default_wt,step=0.1,format="%.2f",key=f"rw_{ck}")
         with c2:
-            sr2=st.number_input("🏭货源价 ¥",0.0,value=0.0,step=10.0,format="%.2f",key=f"rs_{ck}")
+            default_sr = imported_sr if imported_sr else 0.0
+            sr2=st.number_input("🏭货源价 ¥",0.0,value=default_sr,step=10.0,format="%.2f",key=f"rs_{ck}")
         tgts=st.slider("🎯 目标利润率",5,50,20,5,key=f"rt_{ck}",format="%d%%")
         tgt_profit_usd=st.number_input("💵 净利润(USD)",0.0,1000.0,value=0.0,step=1.0,format="%.2f",key=f"rp_{ck}")
         cb1,cb2=st.columns(2)
@@ -394,8 +433,8 @@ def ai_chat(messages):
     except Exception as e:
         return f"❌ 请求失败: {str(e)}"
 
-def render_settings():
-    with st.expander("⚙️ 设置"):
+def render_settings(expanded=False):
+    with st.expander("⚙️ 设置", expanded=expanded):
         st.markdown("**🔐 修改密码**")
         old_pwd = st.text_input("当前密码", type="password", key="old_pwd_input")
         new_pwd = st.text_input("新密码", type="password", key="new_pwd_input")
@@ -487,12 +526,23 @@ def main_app():
         its="".join(f'<span>{c} <b>{r.get(c,0):,.2f}</b></span>' for c in["MXN","BRL","COP","CLP","ARS","UYU"])
         its+=f'<span>CNY <b>{r.get("CNY",0):,.4f}</b></span>'
         st.markdown(f'<div class="fx">{its}</div>',unsafe_allow_html=True)
-    lc,rc=st.columns([1,2.3])
-    with lc: render_chat()
-    with rc:
-        render_calc()
+    # --- Navigation -------------------------
+    st.markdown('<div class="nav-wrap">',unsafe_allow_html=True)
+    render_nav()
+    st.markdown('</div>',unsafe_allow_html=True)
+    nav=st.session_state.get("nav_page","calc")
+    if nav=="calc":
+        lc,rc=st.columns([1,2.3])
+        with lc: render_chat()
+        with rc:
+            render_calc()
+            render_hist()
+            render_settings()
+    elif nav=="scraper":
+        render_scraper_page()
+    elif nav=="settings":
+        render_settings(expanded=True)
         render_hist()
-        render_settings()
     cnt=len(st.session_state.hist)
     ft=r.get("fetched","-") if r and "fetched" in r else "-"
     mode_icon = {"normal":"🧮","reverse":"📊","compare":"🌍"}.get(st.session_state.get("mode","normal"),"🧮")

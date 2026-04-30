@@ -104,6 +104,7 @@ function renderLockScreen(msg) {
 let activeSite = 'MX';
 let fx = null;
 let activePcts = new Set([10, 20]);
+let lastScrapedData = null;
 
 const $ = id => document.getElementById(id);
 
@@ -549,6 +550,11 @@ function clearAllResults() {
 // ─── 1688 自动填充 ────────────────────────────────
 function fillFromProduct(data) {
   if (!data) return;
+  lastScrapedData = data;
+
+  // Show "Send to Dashboard" button
+  const dashBtnRow = $('sendToDashboardRow');
+  if (dashBtnRow) dashBtnRow.style.display = 'flex';
 
   // 多款产品 → 不自动填任何东西
   if (data.has_multiple_skus) {
@@ -884,6 +890,27 @@ document.addEventListener('DOMContentLoaded', () => {
         case 'cross': $('crossRevBtn').click(); break;
         case 'multi': $('multiCalcBtn').click(); break;
       }
+    }
+  });
+
+  // ── Send to Dashboard ──
+  $('sendToDashBtn').addEventListener('click', async () => {
+    if (!lastScrapedData) { showToast('⚠️ 没有可发送的数据', '#fb7185'); return; }
+    try {
+      const resp = await fetch('http://127.0.0.1:8502/api/scrape', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(lastScrapedData),
+      });
+      if (resp.ok) {
+        showToast('✅ 已发送到核价面板！', '#34d399');
+        // Open Dashboard
+        chrome.tabs.create({ url: 'http://localhost:8501/' });
+      } else {
+        showToast('⚠️ 发送失败，API服务未启动？', '#fb7185');
+      }
+    } catch (e) {
+      showToast('⚠️ 请先启动 API 服务 (port 8502)', '#fb7185');
     }
   });
 
