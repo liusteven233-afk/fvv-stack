@@ -197,7 +197,7 @@ def render_nav():
         ("jupyter","🔬","Jupyter","https://jupyter.mzls233.cloud",True),
         ("alist","📁","Alist","https://alist.mzls233.cloud",True),
         ("grafana","📈","Grafana","https://grafana.mzls233.cloud",True),
-        ("scraper","📦","1688爬虫","",False),
+        ("scraper","📦","产品管理","",False),
         ("settings","⚙️","设置","",False),
     ]
     cur=st.session_state.get("nav_page","calc")

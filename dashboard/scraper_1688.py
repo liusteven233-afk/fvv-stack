@@ -72,18 +72,68 @@ def _scrape_with_playwright(url, item_id):
 
     try:
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
+            # Use real Chrome UA + stealth args
+            chrome_args = [
+                "--disable-blink-features=AutomationControlled",
+                "--disable-features=IsolateOrigins,site-per-process",
+                "--disable-web-security",
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+                "--disable-infobars",
+            ]
+            browser = p.chromium.launch(
+                headless=True,
+                args=chrome_args,
+            )
             context = browser.new_context(
-                user_agent=UA,
-                viewport={"width": 1280, "height": 800},
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+                viewport={"width": 1920, "height": 1080},
                 locale="zh-CN",
+                timezone_id="Asia/Shanghai",
+                geolocation={"longitude": 121.4737, "latitude": 31.2304},
+                permissions=["geolocation"],
             )
             page = context.new_page()
-            page.goto(url, wait_until="networkidle", timeout=20000)
-            time.sleep(2)  # extra wait for JS rendering
 
-            html = page.content()
-            title = page.title()
+            # Stealth: remove webdriver traces
+            page.add_init_script("""
+                Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+                Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] });
+                Object.defineProperty(navigator, 'languages', { get: () => ['zh-CN', 'zh', 'en'] });
+                window.chrome = { runtime: {} };
+                Object.defineProperty(navigator, 'deviceMemory', { get: () => 8 });
+                Object.defineProperty(navigator, 'hardwareConcurrency', { get: () => 8 });
+                // Override permissions query to hide headless
+                const originalQuery = window.navigator.permissions.query;
+                window.navigator.permissions.query = (parameters) => (
+                    parameters.name === 'notifications' ?
+                    Promise.resolve({ state: Notification.permission }) :
+                    originalQuery(parameters)
+                );
+            """)
+
+            # Add cookies for 1688 (empty login, just to appear less suspicious)
+            context.add_cookies([{
+                "name": "cna",
+                "value": "test",
+                "domain": ".1688.com",
+                "path": "/"
+            }])
+
+            page.goto(url, wait_until="domcontentloaded", timeout=30000)
+            # Wait for actual content to load
+            try:
+                page.wait_for_selector('h1, .detail-title, .mod-detail-title, [class*="title"]', timeout=8000)
+            except: pass
+            time.sleep(3)
+
+            page_title = page.title()
+
+            # Check if blocked
+            if "验证码" in page_title or "拦截" in page_title or "punish" in page.url:
+                # Try one more time with different approach
+                browser.close()
+                return None  # Fall through to requests fallback
 
             result = {"item_id": item_id, "url": url}
 
@@ -93,7 +143,7 @@ def _scrape_with_playwright(url, item_id):
                 if h1:
                     result["title"] = h1.inner_text().strip()
                 else:
-                    result["title"] = re.sub(r'-1688.*', '', title).strip() if title else ""
+                    result["title"] = re.sub(r'-1688.*', '', page_title).strip() if page_title else ""
             except: result["title"] = ""
 
             # Price from DOM
@@ -513,54 +563,26 @@ def render_scraper_page():
         st.session_state.scraper_product_list = load_products()
 
     st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.markdown('<div class="ct">📦 1688 产品爬虫</div>', unsafe_allow_html=True)
+    st.markdown('<div class="ct">📦 1688 产品管理</div>', unsafe_allow_html=True)
 
-    # ─── URL Input ──────────────────────────
+    # ─── Workflow guide ──────────────────────
+    st.info(
+        "**💡 使用方式**\n\n"
+        "1️⃣ 打开 1688 商品页面 → **Chrome 扩展自动扒取**\n"
+        "2️⃣ 点扩展侧边栏的 **📤 发送到核价面板**\n"
+        "3️⃣ 数据自动出现在下方的「已保存」列表\n\n"
+        "⚠️ 1688 有强反爬机制，服务端无法直接扒取，必须用浏览器扩展。"
+    )
+
+    # ─── API-received products ───────────────
+    # Check API for new products (refresh button)
     c1, c2 = st.columns([3, 1])
-    with c1:
-        url = st.text_input(
-            "1688 商品链接",
-            placeholder="https://detail.1688.com/offer/xxxxxxxx.html",
-            key="scraper_url_input",
-            label_visibility="collapsed",
-        )
     with c2:
-        if st.button("🔍 扒取", type="primary", use_container_width=True, key="scrape_btn"):
-            if not url or "1688.com" not in url:
-                st.session_state.scraper_error = "请输入有效的1688商品链接"
-                st.session_state.scraper_result = None
-            else:
-                st.session_state.scraper_loading = True
-                st.session_state.scraper_error = None
-                st.session_state.scraper_result = None
-                st.rerun()
-
-    # ─── Execute scrape ─────────────────────
-    if st.session_state.get("scraper_loading"):
-        with st.spinner("🔍 正在扒取 1688..."):
-            result = scrape_1688(url)
-            st.session_state.scraper_loading = False
-            if result and "error" in result:
-                st.session_state.scraper_error = result["error"]
-                st.session_state.scraper_result = None
-            elif result:
-                st.session_state.scraper_result = result
-                st.session_state.scraper_error = None
-            else:
-                st.session_state.scraper_error = "扒取失败，请检查链接或稍后重试"
-                st.session_state.scraper_result = None
+        if st.button("🔄 刷新产品列表", use_container_width=True, key="refresh_products"):
+            st.session_state.scraper_product_list = load_products()
             st.rerun()
-
-    # ─── Error display ──────────────────────
-    if st.session_state.get("scraper_error"):
-        st.error(f"❌ {st.session_state.scraper_error}")
-
-    # ─── Result display ─────────────────────
-    result = st.session_state.get("scraper_result")
-    if result:
-        _render_product_detail(result)
-
-    st.markdown('</div>', unsafe_allow_html=True)
+    with c1:
+        st.caption("从扩展发送的数据会自动保存，点击刷新查看最新产品")
 
     # ─── Saved products ─────────────────────
     products = st.session_state.scraper_product_list
