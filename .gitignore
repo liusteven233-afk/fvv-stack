@@ -1,7 +1,32 @@
-__pycache__/
+# Python
 *.pyc
-.env
-*.log
+__pycache__/
+*.egg-info/
 dist/
 build/
-*.spec
+
+# Virtual environments
+venv/
+venv-new/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database
+*.db
+
+# PIDs
+*.pid
+
+# Hermes sessions (too large, only specific ones backed up)
+.hermes/sessions/
+
+# Logs
+*.log
