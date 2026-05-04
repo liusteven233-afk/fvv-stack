@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FVV Stack</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0b0c0f;color:#e0e0e0;font-size:13px;padding:12px}
+.tabs{display:flex;gap:4px;margin-bottom:12px;overflow-x:auto}
+.tab{padding:6px 12px;border-radius:6px;background:#1a1b23;color:#7a7f8c;cursor:pointer;white-space:nowrap;font-size:12px;border:1px solid transparent}
+.tab.active{background:rgba(255,230,0,0.1);color:#FFE600;border-color:#FFE600}
+.panel{display:none}.panel.active{display:block}
+.card{background:#1a1b23;border-radius:8px;padding:10px;margin-bottom:8px;border:1px solid #2a2b33}
+.card-title{font-size:12px;color:#FFE600;margin-bottom:6px;font-weight:600}
+.btn{width:100%;padding:10px 16px;border-radius:6px;border:none;cursor:pointer;font-size:13px;font-weight:600;margin-bottom:6px}
+.btn-gold{background:linear-gradient(135deg,#FFE600,#FFC700);color:#0b0c0f}
+.btn-blue{background:#3b82f6;color:white}
+.scrape-info{font-size:10px;color:#7a7f8c;margin-top:4px}
+</style></head><body>
+<div class="tabs">
+    <div class="tab active" data-tab="sourcing">采集</div>
+    <div class="tab" data-tab="pricing">核价</div>
+    <div class="tab" data-tab="listing">上架</div>
+</div>
+
+<div class="panel active" id="panel-sourcing">
+    <div class="card">
+        <div class="card-title">🎯 采集ML商品</div>
+        <div id="mlProductStatus" class="scrape-info">打开ML商品页，点下方按钮</div>
+        <button class="btn btn-gold" onclick="scrapeCurrentML()">📥 采集当前页</button>
+    </div>
+    <div id="mlProductDetail" class="card" style="display:none"></div>
+</div>
+
+<div class="panel" id="panel-pricing">
+    <div class="card">
+        <div class="card-title">💰 核价</div>
+        <div style="color:#7a7f8c;font-size:11px">先用采集功能获取商品数据</div>
+    </div>
+</div>
+
+<div class="panel" id="panel-listing">
+    <div class="card">
+        <div class="card-title">📤 上架</div>
+        <div style="color:#7a7f8c;font-size:11px">先用采集功能获取商品数据</div>
+    </div>
+</div>
+
+<script src="sidepanel.js"></script>
+</body></html>
